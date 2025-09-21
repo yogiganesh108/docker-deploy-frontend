@@ -1,0 +1,354 @@
+/* ================================
+   Sidebar Styles
+   ================================ */
+
+/* Sidebar base */
+.layout-sidebar {
+  padding: var(--spacing-md);
+  height: calc(100vh - 48px);
+  box-sizing: border-box;
+  position: sticky;
+  top: 24px;
+  border-radius: var(--border-radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  overflow: auto;
+  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+}
+
+/* Sidebar content */
+.sidebar-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation sections */
+.nav-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.nav-section:last-child {
+  margin-bottom: 0;
+}
+
+.nav-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+}
+
+/* Navigation list */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Sidebar items */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.sidebar-item:hover {
+  background: rgba(124, 92, 255, 0.06);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.sidebar-item:active {
+  transform: translateY(0);
+}
+
+/* Icon container */
+.sidebar-item .icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sidebar-item .icon svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Text content */
+.sidebar-item span:not(.icon) {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active state */
+.sidebar-item.active {
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.14), rgba(0, 226, 168, 0.06));
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(7, 10, 25, 0.45), 0 0 18px rgba(124, 92, 255, 0.08);
+  transform: none;
+}
+
+.sidebar-item.active .icon {
+  background: rgba(124, 92, 255, 0.15);
+  box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.2);
+}
+
+.sidebar-item.active .icon svg {
+  color: var(--accent);
+}
+
+/* Create playlist button */
+.create-playlist-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: var(--spacing-sm);
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.create-playlist-btn:hover {
+  background: rgba(124, 92, 255, 0.1);
+  color: #fff;
+  border-color: rgba(124, 92, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.create-playlist-btn .icon {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.create-playlist-btn .icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 992px) {
+  .layout-sidebar {
+    height: auto;
+    position: relative;
+    top: 0;
+    padding: var(--spacing-sm);
+  }
+
+  .sidebar-item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-sm);
+    min-height: 40px;
+  }
+
+  .sidebar-item .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sidebar-item .icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav-title {
+    font-size: 0.7rem;
+    padding: 0 var(--spacing-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-sidebar {
+    padding: var(--spacing-xs);
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: var(--spacing-xs);
+    gap: var(--spacing-xs);
+  }
+
+  .nav-section {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .nav-list {
+    flex-direction: row;
+    gap: var(--spacing-xs);
+  }
+
+  .sidebar-item {
+    flex-shrink: 0;
+    min-width: 60px;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-xs);
+    min-height: 48px;
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-xs);
+  }
+
+  .sidebar-item span:not(.icon) {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .sidebar-item .icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-item .icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .create-playlist-btn {
+    flex-direction: column;
+    padding: var(--spacing-sm) var(--spacing-xs);
+    min-width: 60px;
+    text-align: center;
+    gap: var(--spacing-xs);
+    margin-top: 0;
+  }
+
+  .create-playlist-btn span:not(.icon) {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .create-playlist-btn .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .create-playlist-btn .icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-item {
+    min-width: 56px;
+    padding: var(--spacing-xs);
+  }
+
+  .sidebar-item .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidebar-item .icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .create-playlist-btn {
+    min-width: 56px;
+    padding: var(--spacing-xs);
+  }
+
+  .create-playlist-btn .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .create-playlist-btn .icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ================================
+   Accessibility & Focus States
+   ================================ */
+
+.sidebar-item:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.create-playlist-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* ================================
+   Animation Enhancements
+   ================================ */
+
+.sidebar-item,
+.create-playlist-btn {
+  will-change: transform, background-color, box-shadow;
+}
+
+.nav-section {
+  animation: slideInFromLeft 0.3s ease-out both;
+}
+
+.nav-section:nth-child(1) { animation-delay: 0.1s; }
+.nav-section:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

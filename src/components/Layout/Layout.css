@@ -1,0 +1,297 @@
+/* ================================
+   Layout Grid System
+   ================================ */
+
+/* Import variables */
+@import '../styles/variables.css';
+
+/* Main app layout grid: sidebar + main content */
+.app-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  gap: var(--gap);
+  min-height: 100vh;
+  align-items: stretch;
+  padding: 20px;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Header/navbar area spans both columns */
+.app-layout .layout-header {
+  grid-column: 1 / -1;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+  background: transparent;
+  width: 100%;
+  position: relative;
+  z-index: 100;
+}
+
+.navbar-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Navbar container styling */
+.navbar {
+  width: 100%;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+}
+
+.navbar-content {
+  width: 100%;
+  padding: 0;
+  max-width: none;
+}
+
+.navbar .navbar-brand {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #fff !important;
+}
+
+.navbar .navbar-brand:hover {
+  color: var(--accent) !important;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Search form styling */
+.search-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input-group {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.search-input-group:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(124, 92, 255, 0.2);
+}
+
+.search-input {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 8px 16px;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.search-input-group .input-group-text {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* User menu styling */
+.user-menu {
+  cursor: pointer;
+  border-radius: 50px;
+  padding: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.user-menu:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.2s ease;
+}
+
+.user-menu:hover .user-avatar {
+  border-color: var(--accent);
+}
+
+.user-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Navbar navigation links */
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500;
+  margin: 0 8px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  background: rgba(15, 23, 36, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.8);
+}
+
+.dropdown-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 10px 16px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(124, 92, 255, 0.1) !important;
+  color: var(--accent) !important;
+}
+
+.dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  margin: 4px 0;
+}
+
+/* Navbar alignment helpers */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Main content area */
+.app-main {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  padding: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  min-height: calc(100vh - var(--header-h) - 80px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================
+   Music Player Positioning
+   ================================ */
+
+.app-layout > .music-player-container {
+  position: fixed;
+  bottom: 20px;
+  left: calc(var(--sidebar-w) + 40px);
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  transform: none;
+  padding: 0 20px;
+  max-width: calc(100vw - var(--sidebar-w) - 80px);
+}
+
+/* ================================
+   Responsive Layout
+   ================================ */
+
+@media (max-width: 992px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-h) auto 1fr;
+    padding: 12px;
+  }
+
+  .app-layout .layout-header {
+    padding: 0 8px;
+  }
+
+  /* Place sidebar below header on mobile */
+  .app-layout .layout-sidebar {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+
+  .app-layout .app-main {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    padding: 10px;
+  }
+
+  /* Adjust music player for mobile */
+  .app-layout > .music-player-container {
+    bottom: 10px;
+    left: 20px;
+    right: 20px;
+    transform: none;
+  }
+
+  /* Mobile navbar adjustments */
+  .search-form {
+    max-width: 300px;
+  }
+
+  .navbar-nav .nav-link {
+    margin: 0 4px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .user-name {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    padding: 8px;
+  }
+
+  .search-form {
+    max-width: 250px;
+  }
+
+  .navbar .navbar-brand {
+    font-size: 1.1rem;
+  }
+
+  .brand-text {
+    display: none;
+  }
+}
