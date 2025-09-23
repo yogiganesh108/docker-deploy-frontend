@@ -1,13 +1,18 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./components/styles/App.jsx";
-import "./components/styles/global.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './components/styles/App';
+import { AuthProvider } from './components/contexts/AuthContext';
+import { MusicProvider } from './components/contexts/MusicContext';
+import './components/styles/global.css';
 
-const container = document.getElementById("root");
-if (!container) throw new Error("Root element not found");
+const root = ReactDOM.createRoot(document.getElementById('root'));
 
-createRoot(container).render(
+root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <MusicProvider>
+        <App />
+      </MusicProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

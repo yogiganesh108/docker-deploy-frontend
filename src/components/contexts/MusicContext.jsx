@@ -1,4 +1,13 @@
-import React, { useEffect, useRef, useState, createContext, useContext } from "react";
+import React, { useEffect, useRef, useState, createContext, useContext, useCallback } from "react";
+import {
+  fetchAllTracks,
+  fetchAllAlbums,
+  fetchAllArtists,
+  fetchAllPlaylists,
+  fetchFeaturedPlaylists,
+  fetchTrendingArtists
+} from "../../services/musicService";
+import { useAuth } from "./AuthContext";
 
 const MusicContext = createContext();
 
@@ -11,6 +20,7 @@ export const useMusic = () => {
 };
 
 export const MusicProvider = ({ children }) => {
+  const { isAuthenticated } = useAuth();
   const [currentTrack, setCurrentTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -20,140 +30,136 @@ export const MusicProvider = ({ children }) => {
   const [repeatMode, setRepeatMode] = useState("none");
   const [playlist, setPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [tracks, setTracks] = useState([]);
+  const [albums, setAlbums] = useState([]);
+  const [artists, setArtists] = useState([]);
+  const [playlists, setPlaylistsData] = useState([]);
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
+  const [trendingArtists, setTrendingArtists] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const audioRef = useRef(null);
+  const audioRef = useRef(new Audio());
 
-  // Load initial tracks
+  // Load initial data from backend
   useEffect(() => {
-    const loadInitialTracks = async () => {
-      try {
-        // For now, use mock data since API service might not be available
-        const mockTracks = [
-          {
-            id: 1,
-            title: "Midnight Dreams",
-            artist: "Luna Echo",
-            album: "Nocturnal Waves",
-            duration: 245,
-            cover: "https://images.pexels.com/photos/167092/pexels-photo-167092.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-            audio: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-          },
-          {
-            id: 2,
-            title: "Electric Pulse",
-            artist: "Neon Nights",
-            album: "Synthwave Stories",
-            duration: 198,
-            cover: "https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-            audio: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-          },
-          {
-            id: 3,
-            title: "Ocean Breeze",
-            artist: "Coastal Vibes",
-            album: "Summer Anthology",
-            duration: 267,
-            cover: "https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-            audio: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-          },
-        ];
-        setPlaylist(mockTracks);
-      } catch (error) {
-        console.error("Error loading tracks:", error);
+    if (isAuthenticated) {
+      const loadData = async () => {
+        try {
+          setIsLoading(true);
+          setError(null);
+          const [trackData, albumData, artistData, playlistData, featuredPlaylistData, trendingArtistData] = await Promise.all([
+            fetchAllTracks(),
+            fetchAllAlbums(),
+            fetchAllArtists(),
+            fetchAllPlaylists(),
+            fetchFeaturedPlaylists(),
+            fetchTrendingArtists()
+          ]);
+          setTracks(trackData);
+          setAlbums(albumData); // ✅ REMOVED STRAY 'p' CHARACTER HERE
+          setArtists(artistData);
+          setPlaylistsData(playlistData);
+          setFeaturedPlaylists(featuredPlaylistData);
+          setTrendingArtists(trendingArtistData);
+          if (trackData?.length > 0) setPlaylist(trackData);
+        } catch (err) {
+          console.error("Error loading data:", err);
+          setError("Failed to load music data.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadData();
+    } else {
+      // If user logs out, clear all data
+      setTracks([]);
+      setAlbums([]);
+      setArtists([]);
+      setPlaylistsData([]);
+      setFeaturedPlaylists([]);
+      setTrendingArtists([]);
+      setPlaylist([]);
+      setCurrentTrack(null);
+      setIsPlaying(false);
+    }
+  }, [isAuthenticated]);
+  
+  const togglePlayPause = () => {
+    if (!currentTrack) return;
+    setIsPlaying(prevIsPlaying => !prevIsPlaying);
+  };
+  
+  const playTrack = useCallback((track, trackIndex = null) => {
+    if (currentTrack?.id === track.id) {
+      togglePlayPause();
+      return;
+    }
+    setCurrentTrack(track);
+    if (trackIndex !== null) setCurrentIndex(trackIndex);
+    setIsPlaying(true);
+  }, [currentTrack, togglePlayPause]);
+
+  const nextTrack = useCallback(() => {
+    if (playlist.length === 0) return;
+    const newIndex = isShuffling
+      ? Math.floor(Math.random() * playlist.length)
+      : (currentIndex + 1);
+    
+    if (newIndex >= playlist.length) {
+      if (repeatMode === 'all') {
+        playTrack(playlist[0], 0);
+      } else {
+        setIsPlaying(false);
       }
-    };
-    loadInitialTracks();
-  }, []);
+      return;
+    }
+    playTrack(playlist[newIndex], newIndex);
+  }, [currentIndex, isShuffling, playlist, repeatMode, playTrack]);
+  
+  const prevTrack = useCallback(() => {
+      if (playlist.length === 0) return;
+      const newIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      playTrack(playlist[newIndex], newIndex);
+  }, [currentIndex, playlist, playTrack]);
 
-  // Handle play/pause state changes
+  const handleTrackEnd = useCallback(() => {
+    if (repeatMode === "one") {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    } else {
+      nextTrack();
+    }
+  }, [repeatMode, nextTrack]);
+
+  // Effect to control the audio element source and play
   useEffect(() => {
-    if (audioRef.current) {
+    if (currentTrack?.fileUrl) {
+      audioRef.current.src = currentTrack.fileUrl;
       if (isPlaying) {
         audioRef.current.play().catch(e => console.error("Error playing audio:", e));
       } else {
         audioRef.current.pause();
       }
     }
-  }, [isPlaying]);
+  }, [currentTrack, isPlaying]);
 
-  // Handle audio element setup and event listeners
+  // Effect for audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
-
     const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
-
+    const setAudioDuration = () => setDuration(audio.duration);
+    
     audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", updateDuration);
+    audio.addEventListener("loadedmetadata", setAudioDuration);
     audio.addEventListener("ended", handleTrackEnd);
 
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
-      audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("loadedmetadata", setAudioDuration);
       audio.removeEventListener("ended", handleTrackEnd);
     };
-  }, [currentTrack]);
-
-  const handleTrackEnd = () => {
-    if (repeatMode === "one") {
-      playTrack(currentTrack);
-    } else {
-      nextTrack();
-    }
-  };
-
-  const playTrack = (track, trackIndex = null) => {
-    if (currentTrack && currentTrack.id === track.id) {
-      togglePlayPause();
-      return;
-    }
-    setCurrentTrack(track);
-    if (trackIndex !== null) {
-      setCurrentIndex(trackIndex);
-    }
-    setIsPlaying(true);
-  };
-
-  const togglePlayPause = () => {
-    if (currentTrack) {
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const nextTrack = () => {
-    if (playlist.length === 0) return;
-    let nextIndex;
-    if (isShuffling) {
-      do {
-        nextIndex = Math.floor(Math.random() * playlist.length);
-      } while (nextIndex === currentIndex);
-    } else if (repeatMode === "all" && currentIndex === playlist.length - 1) {
-      nextIndex = 0;
-    } else if (currentIndex < playlist.length - 1) {
-      nextIndex = currentIndex + 1;
-    } else {
-      setIsPlaying(false);
-      return;
-    }
-    setCurrentIndex(nextIndex);
-    playTrack(playlist[nextIndex], nextIndex);
-  };
-
-  const prevTrack = () => {
-    if (playlist.length === 0) return;
-    let prevIndex;
-    if (currentIndex > 0) {
-      prevIndex = currentIndex - 1;
-    } else if (repeatMode === "all") {
-      prevIndex = playlist.length - 1;
-    } else {
-      seekTo(0);
-      return;
-    }
-    setCurrentIndex(prevIndex);
-    playTrack(playlist[prevIndex], prevIndex);
-  };
+  }, [handleTrackEnd]);
 
   const seekTo = (time) => {
     if (audioRef.current) {
@@ -169,9 +175,7 @@ export const MusicProvider = ({ children }) => {
     }
   };
 
-  const toggleShuffle = () => {
-    setIsShuffling(!isShuffling);
-  };
+  const toggleShuffle = () => setIsShuffling(!isShuffling);
 
   const toggleRepeat = () => {
     const modes = ["none", "one", "all"];
@@ -179,12 +183,12 @@ export const MusicProvider = ({ children }) => {
     const nextMode = modes[(currentModeIndex + 1) % modes.length];
     setRepeatMode(nextMode);
   };
-
+  
   const formatTime = (seconds) => {
-    if (!seconds) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+      if (isNaN(seconds) || seconds < 0) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const value = {
@@ -197,7 +201,15 @@ export const MusicProvider = ({ children }) => {
     repeatMode,
     playlist,
     currentIndex,
-    mockTracks: playlist,
+    tracks,
+    albums,
+    artists,
+    playlists,
+    featuredPlaylists,
+    trendingArtists,
+    isLoading,
+    error,
+    audioRef,
     playTrack,
     togglePlayPause,
     nextTrack,
@@ -207,13 +219,12 @@ export const MusicProvider = ({ children }) => {
     toggleShuffle,
     toggleRepeat,
     formatTime,
-    audioRef,
   };
 
   return (
     <MusicContext.Provider value={value}>
       {children}
-      <audio ref={audioRef} src={currentTrack?.audio} />
     </MusicContext.Provider>
   );
 };
+

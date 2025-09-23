@@ -60,7 +60,7 @@ export default function Login({ goToSignup }) {
     setMessage("");
 
     try {
-      const result = login(formData.email, formData.password);
+      const result = await login(formData.email, formData.password);
 
       if (result.success) {
         setMessage("Login successful! Redirecting...");
@@ -68,7 +68,7 @@ export default function Login({ goToSignup }) {
           navigate("/");
         }, 1000);
       } else {
-        setMessage("Login failed. Please try again.");
+        setMessage(result.message || "Login failed. Please try again.");
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");

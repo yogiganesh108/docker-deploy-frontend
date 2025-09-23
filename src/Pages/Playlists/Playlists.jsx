@@ -4,56 +4,37 @@ import { useMusic } from '../../components/contexts/MusicContext';
 import './Playlists.css';
 
 const Playlists = () => {
-  const { mockTracks, playTrack } = useMusic();
+  const { playlists, tracks, playTrack, isLoading, error } = useMusic();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const mockPlaylists = [
-    {
-      id: 1,
-      title: 'My Favorites',
-      description: 'Songs I love the most',
-      cover: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
-      trackCount: 23,
-      duration: '1h 32m',
-      isPublic: false,
-      createdAt: '2024-01-15'
-    },
-    {
-      id: 2,
-      title: 'Workout Mix',
-      description: 'High energy tracks for the gym',
-      cover: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
-      trackCount: 45,
-      duration: '2h 48m',
-      isPublic: true,
-      createdAt: '2024-01-10'
-    },
-    {
-      id: 3,
-      title: 'Late Night Vibes',
-      description: 'Chill songs for late night sessions',
-      cover: 'https://images.pexels.com/photos/462093/pexels-photo-462093.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
-      trackCount: 18,
-      duration: '1h 12m',
-      isPublic: false,
-      createdAt: '2024-01-08'
-    },
-    {
-      id: 4,
-      title: 'Road Trip Classics',
-      description: 'Perfect songs for long drives',
-      cover: 'https://images.pexels.com/photos/235990/pexels-photo-235990.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
-      trackCount: 67,
-      duration: '4h 15m',
-      isPublic: true,
-      createdAt: '2024-01-05'
-    }
-  ];
-
-  const filteredPlaylists = mockPlaylists.filter(playlist =>
+  const filteredPlaylists = playlists.filter(playlist =>
     playlist.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     playlist.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="playlists-page">
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Loading playlists...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="playlists-page">
+        <div className="error-state">
+          <h2>Something went wrong</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="playlists-page">
@@ -91,8 +72,8 @@ const Playlists = () => {
         {filteredPlaylists.map((playlist) => (
           <div key={playlist.id} className="playlist-card">
             <div className="playlist-cover-container">
-              <img 
-                src={playlist.cover} 
+              <img
+                src={playlist.cover}
                 alt={playlist.title}
                 className="playlist-cover"
               />
@@ -114,7 +95,7 @@ const Playlists = () => {
                 <span className="duration">{playlist.duration}</span>
               </div>
             </div>
-            
+
             <div className="playlist-info">
               <h3 className="playlist-title">{playlist.title}</h3>
               <p className="playlist-description">{playlist.description}</p>
@@ -136,8 +117,8 @@ const Playlists = () => {
           <div className="empty-icon">🎵</div>
           <h3>No playlists found</h3>
           <p>
-            {searchQuery ? 
-              `No playlists match "${searchQuery}"` : 
+            {searchQuery ?
+              `No playlists match "${searchQuery}"` :
               "You haven't created any playlists yet"
             }
           </p>
@@ -153,11 +134,11 @@ const Playlists = () => {
           <h2 className="section-title">Made for You</h2>
         </div>
         <div className="tracks-grid">
-          {mockTracks.map((track, index) => (
+          {tracks.slice(0, 6).map((track, index) => (
             <div key={track.id} className="track-card">
               <div className="track-cover-container">
                 <img src={track.cover} alt={track.title} className="track-cover" />
-                <button 
+                <button
                   className="track-play-btn"
                   onClick={() => playTrack(track, index)}
                 >

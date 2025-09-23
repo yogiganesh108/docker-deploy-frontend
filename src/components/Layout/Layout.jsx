@@ -2,17 +2,17 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Navbar from "./Navbar";
+import MusicPlayer from '../MusicPlayer/MusicPlayer'; // This import is correct
 import Sidebar from "./Sidebar";
-import MusicPlayer from "../MusicPlayer/MusicPlayer.jsx"; // explicit extension
 import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
 
 const Layout = () => {
-  // guard if hook isn't available yet
+  // This part for handling auth loading is fine.
   let auth = { isLoading: false };
   try {
     auth = useAuth() || auth;
   } catch (e) {
-    // silently fallback to not-loading so app still renders
+    // silently fallback
   }
   const { isLoading } = auth;
 
@@ -35,10 +35,12 @@ const Layout = () => {
         <Sidebar />
       </aside>
       <main className="app-main">
+        {/* Your different pages (Home, Albums, etc.) render here */}
         <Outlet />
       </main>
       <ErrorBoundary>
         <div className="music-player-container">
+          {/* ✅ Corrected: The MusicPlayer component is now being rendered */}
           <MusicPlayer />
         </div>
       </ErrorBoundary>

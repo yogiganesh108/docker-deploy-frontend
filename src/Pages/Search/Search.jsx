@@ -2,95 +2,72 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Play, Heart, MoreHorizontal } from 'lucide-react';
 import { useMusic } from '../../components/contexts/MusicContext';
+import { searchAll } from '../../services/musicService';
 import './Search.css';
+
 
 const Search = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [activeTab, setActiveTab] = useState('all');
-  const { mockTracks, playTrack } = useMusic();
+  const { tracks, artists, albums, playlists, playTrack } = useMusic();
 
-  // Mock search results
-  const mockSearchResults = {
-    tracks: mockTracks,
-    artists: [
-      {
-        id: 1,
-        name: 'Luna Echo',
-        followers: '2.1M',
-        image: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop'
-      },
-      {
-        id: 2,
-        name: 'Neon Nights',
-        followers: '1.8M',
-        image: 'https://images.pexels.com/photos/167092/pexels-photo-167092.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop'
-      }
-    ],
-    albums: [
-      {
-        id: 1,
-        title: 'Nocturnal Waves',
-        artist: 'Luna Echo',
-        year: 2024,
-        cover: 'https://images.pexels.com/photos/167092/pexels-photo-167092.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop'
-      },
-      {
-        id: 2,
-        title: 'Synthwave Stories',
-        artist: 'Neon Nights',
-        year: 2024,
-        cover: 'https://images.pexels.com/photos/1699161/pexels-photo-1699161.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop'
-      }
-    ],
-    playlists: [
-      {
-        id: 1,
-        title: 'Electronic Dreams',
-        description: 'Best electronic music',
-        trackCount: 45,
-        cover: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop'
-      }
-    ]
-  };
-
-  const [results, setResults] = useState(mockSearchResults);
+  const [results, setResults] = useState({
+    tracks: [],
+    artists: [],
+    albums: [],
+    playlists: []
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (searchQuery) {
       performSearch(searchQuery);
+    } else {
+      // Show all data when no search query
+      setResults({
+        tracks: tracks,
+        artists: artists,
+        albums: albums,
+        playlists: playlists
+      });
     }
-  }, [searchQuery]);
+  }, [searchQuery, tracks, artists, albums, playlists]);
 
   const performSearch = async (query) => {
     setIsLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // Filter results based on search query
+    setError(null);
+
+    try {
+      const searchResults = await searchAll(query); // ✅ Use the new function name
+      setResults(searchResults);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setError("Search failed. Please try again.");
+      // Fallback to local filtering
       const filteredResults = {
-        tracks: mockSearchResults.tracks.filter(track =>
+        tracks: tracks.filter(track =>
           track.title.toLowerCase().includes(query.toLowerCase()) ||
           track.artist.toLowerCase().includes(query.toLowerCase())
         ),
-        artists: mockSearchResults.artists.filter(artist =>
+        artists: artists.filter(artist =>
           artist.name.toLowerCase().includes(query.toLowerCase())
         ),
-        albums: mockSearchResults.albums.filter(album =>
+        albums: albums.filter(album =>
           album.title.toLowerCase().includes(query.toLowerCase()) ||
           album.artist.toLowerCase().includes(query.toLowerCase())
         ),
-        playlists: mockSearchResults.playlists.filter(playlist =>
+        playlists: playlists.filter(playlist =>
           playlist.title.toLowerCase().includes(query.toLowerCase()) ||
           playlist.description.toLowerCase().includes(query.toLowerCase())
         )
       };
-      
       setResults(filteredResults);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const handleSearch = (e) => {
@@ -208,7 +185,7 @@ const Search = () => {
     </div>
   );
 
-  const hasResults = results.tracks.length > 0 || results.artists.length > 0 || 
+  const hasResults = results.tracks.length > 0 || results.artists.length > 0 ||
                    results.albums.length > 0 || results.playlists.length > 0;
 
   return (
@@ -257,6 +234,11 @@ const Search = () => {
               <div className="loading-state">
                 <div className="spinner"></div>
                 <p>Searching...</p>
+              </div>
+            ) : error ? (
+              <div className="error-state">
+                <h3>Search Error</h3>
+                <p>{error}</p>
               </div>
             ) : hasResults ? (
               <div className="results-content">

@@ -74,7 +74,7 @@ export default function Signup({ goToLogin }) {
     setMessage("");
 
     try {
-      const result = signup(formData.name, formData.email, formData.password);
+      const result = await signup(formData.name, formData.email, formData.password);
 
       if (result.success) {
         setMessage("Account created successfully! Redirecting...");
@@ -82,7 +82,7 @@ export default function Signup({ goToLogin }) {
           navigate("/");
         }, 1000);
       } else {
-        setMessage("Signup failed. Please try again.");
+        setMessage(result.message || "Signup failed. Please try again.");
       }
     } catch (error) {
       setMessage("An error occurred. Please try again.");
