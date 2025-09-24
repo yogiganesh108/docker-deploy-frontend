@@ -1,0 +1,163 @@
+/* Stronger headers and animated entrances */
+.artists-header h1 { font-weight: 900; letter-spacing: 0.6px; color: var(--text-primary); }
+.artists-grid.grid-stagger { display: grid; gap: 24px; }
+
+/* Card hover polish */
+.artist-card { background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008)); }
+.artist-card:hover { transform: translateY(-6px) scale(1.01); border-color: var(--border-secondary); box-shadow: var(--shadow-xl); }
+
+/* Avatar micro-interactions */
+.artist-image-container { transition: transform var(--transition-normal); }
+.artist-card:hover .artist-image-container { transform: translateY(-6px) scale(1.02); }
+
+/* Detail overlay fade */
+.artist-overlay { transition: opacity var(--transition-normal), transform var(--transition-normal); }
+.artist-card:hover .artist-overlay { opacity: 1; transform: translateY(0); }
+
+/* Follow button: glowing interaction */
+.follow-btn-small, .follow-btn {
+  transition: transform var(--transition-fast), background var(--transition-normal), box-shadow var(--transition-normal);
+}
+.follow-btn-small:hover, .follow-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,255,255,0.02); }
+
+/* Responsive tweaks keep bold typography */
+.artist-name { font-weight: 700; }
+
+/* Fix artists grid alignment */
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+}
+
+/* Fix artist card alignment */
+.artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background: var(--glass-bg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.artist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Artist image styling */
+.artist-image {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Artist info styling */
+.artist-info {
+  width: 100%;
+  padding: 0 var(--spacing-sm);
+}
+
+.artist-name {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.3;
+}
+
+.artist-genre-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Artist stats mini */
+.artist-stats-mini {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Artist card actions */
+.artist-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* Play button in artist card */
+.artist-play-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: 6px 12px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  transition: background var(--transition-normal);
+  height: 36px;
+  line-height: 1;
+}
+
+.artist-play-btn svg {
+  vertical-align: middle;
+}
+
+/* Follow button small */
+.follow-btn-small {
+  background: var(--glass-bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 12px;
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  transition: background var(--transition-normal), color var(--transition-normal);
+  height: 36px;
+  line-height: 1;
+}
+
+.follow-btn-small.following {
+  background: var(--accent);
+  color: #fff;
+}
+
+.follow-btn-small:hover {
+  background: var(--accent-2);
+  color: #fff;
+}
+
+/* Heart button */
+.artist-heart-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--transition-normal);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.artist-heart-btn:hover {
+  color: var(--accent);
+}
