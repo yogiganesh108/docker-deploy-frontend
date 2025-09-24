@@ -84,7 +84,7 @@ export default function Login({ goToSignup }) {
           <div className="auth-inner">
             <div className="slide-switch">
               <div className="slide-panel slide-in-left">
-                <h1 className="auth-title">Welcome Back</h1>
+                <h1 className="auth-title">hello world</h1>
                 <p className="auth-subtitle">Sign in to your Beatflow account</p>
 
                 {message && (
