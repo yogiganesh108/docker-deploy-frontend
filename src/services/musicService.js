@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:30088/backend/'; // Use your backend's port
+const API_BASE_URL = 'http://44.221.60.49:8081/backend/'; // Use your backend's port
 
 // A helper function to create authenticated requests
 const createAuthenticatedRequest = (endpoint) => {
