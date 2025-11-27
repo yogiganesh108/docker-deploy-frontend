@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 // Define the API endpoint for your backend
-const API_URL = "http://localhost:30088/api/auth";
+const API_URL = "http://44.221.60.49:8081/api/auth";
 
 // Custom hook to use the auth context
 export const useAuth = () => useContext(AuthContext);
